@@ -7,7 +7,7 @@ public class CellPhone {
     private String phoneNumber;
     private String owner;
 
-    // Parameterless constructor with default values
+
     public CellPhone() {
         this.serialNumber = 0;
         this.model = "";
@@ -16,7 +16,7 @@ public class CellPhone {
         this.owner = "";
     }
 
-    // Getters and Setters
+    
     public int getSerialNumber() {
         return serialNumber;
     }
