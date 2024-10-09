@@ -15,7 +15,7 @@ public class CellPhone {
         this.owner = "";
     }
 
-    
+
     public int getSerialNumber() {
         return serialNumber;
     }
