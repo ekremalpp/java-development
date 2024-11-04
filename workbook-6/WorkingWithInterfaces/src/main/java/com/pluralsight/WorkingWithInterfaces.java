@@ -18,7 +18,7 @@ public class WorkingWithInterfaces {
 
         Collections.sort(myFamily);
 
-       
+
         for (Person person : myFamily) {
             System.out.println(person);
         }
