@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Portfolio {
+    private String name;
+    private String owner;
     private List<Valuable> assets;
 
-    public Portfolio() {
-        this.assets = new ArrayList<>();
+    public Portfolio(String name, String owner, List<Valuable> assets) {
+        this.name = name;
+        this.owner = owner;
+        this.assets = assets;
     }
 
     public void addAsset(Valuable asset) {
@@ -52,7 +56,7 @@ public class Portfolio {
             double value = asset.getValue();
             if (value < minValue) {
                 minValue = value;
-                leastValuable = asset; 
+                leastValuable = asset;
             }
         }
         return leastValuable;
