@@ -8,11 +8,6 @@ public class Portfolio {
     private String owner;
     private List<Valuable> assets;
 
-    public Portfolio(String name, String owner, List<Valuable> assets) {
-        this.name = name;
-        this.owner = owner;
-        this.assets = assets;
-    }
 
     public void addAsset(Valuable asset) {
         assets.add(asset);
