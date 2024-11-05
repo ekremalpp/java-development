@@ -43,5 +43,27 @@ public class Program {
             }
         }
         scanner.close();
+
+        
+        int totalAge = 0;
+        int maxAge = Integer.MIN_VALUE;
+        int minAge = Integer.MAX_VALUE;
+
+        for (Person person : people) {
+            int age = person.getAge();
+            totalAge += age;
+            if (age > maxAge) {
+                maxAge = age;
+            }
+            if (age < minAge) {
+                minAge = age;
+            }
+        }
+
+        double averageAge = (double) totalAge / people.size();
+        System.out.println("Average age: " + averageAge);
+        System.out.println("The oldest age: " + maxAge);
+        System.out.println("The youngest age: " + minAge);
     }
-}
+    }
+
