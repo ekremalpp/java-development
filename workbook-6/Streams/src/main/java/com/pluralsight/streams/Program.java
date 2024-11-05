@@ -1,7 +1,9 @@
 package com.pluralsight.streams;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Program {
     public static void main(String[] args) {
@@ -17,5 +19,29 @@ public class Program {
         people.add(new Person("Paul", "Rodriguez", 27));
         people.add(new Person("Bob","Brown",35));
 
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter a name (first or last) to search: ");
+        String searchName = scanner.nextLine().trim().toLowerCase();
+
+        List<Person>matchPeople = new ArrayList<>();
+
+        for(Person person : people) {
+            if (person.getFirstName().equalsIgnoreCase(searchName)) {
+                person.getLastName().equalsIgnoreCase(searchName);
+                matchPeople.add(person);
+            }
+
+        }
+
+        if (matchPeople.isEmpty()) {
+            System.out.println("Can not found name with that time");
+
+        } else {
+            System.out.println("people matched" + searchName + ":");
+            for (Person person : matchPeople) {
+                System.out.println(person);
+            }
+        }
+        scanner.close();
     }
 }
