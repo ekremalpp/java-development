@@ -19,6 +19,7 @@ public class Program {
         people.add(new Person("Paul", "Rodriguez", 27));
         people.add(new Person("Bob","Brown",35));
 
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter a name (first or last) to search: ");
         String searchName = scanner.nextLine().trim().toLowerCase();
@@ -44,7 +45,7 @@ public class Program {
         }
         scanner.close();
 
-        
+
         int totalAge = 0;
         int maxAge = Integer.MIN_VALUE;
         int minAge = Integer.MAX_VALUE;
