@@ -66,13 +66,10 @@ public class Program {
                 .orElse(Integer.MIN_VALUE);
     }
 
-    private static int findYoungestAge(List<Person> people) {
-        int minAge = Integer.MAX_VALUE;
-        for (Person person : people) {
-            if (person.getAge() < minAge) {
-                minAge = person.getAge();
-            }
-        }
-        return minAge;
+    public static int findYoungestAge(List<Person> people) {
+        return people.stream()
+                .mapToInt(Person::getAge)
+                .min()
+                .orElse(Integer.MAX_VALUE);
     }
 }
