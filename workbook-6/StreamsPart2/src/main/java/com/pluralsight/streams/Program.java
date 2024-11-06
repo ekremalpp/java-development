@@ -3,7 +3,7 @@ package com.pluralsight.streams;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
+import java.util.stream.Collectors;
 public class Program {
     public static void main(String[] args) {
         List<Person> people = createPeopleList();
@@ -12,13 +12,15 @@ public class Program {
         Scanner scanner = new Scanner(System.in);
         String searchName = scanner.nextLine();
 
-        List<Person> matchingPeople = new ArrayList<>();
-        for (Person person : people) {
-            if (person.getFirstName().equalsIgnoreCase(searchName) ||
-                    person.getLastName().equalsIgnoreCase(searchName)) {
-                matchingPeople.add(person);
-            }
-        }
+        List<Person> matchingPeople = people.stream()
+                .filter(person -> person.getFirstName().equalsIgnoreCase(searchName) ||
+                        person.getLastName().equalsIgnoreCase(searchName))
+                .collect(Collectors.toList());
+
+        System.out.println("People with matching name:");
+        matchingPeople.forEach(person ->
+                System.out.println(person.getFirstName() + " " + person.getLastName()));
+
 
         System.out.println("People with matching name:");
         for (Person person : matchingPeople) {
