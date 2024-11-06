@@ -52,21 +52,18 @@ public class Program {
         return people;
     }
 
-    private static double calculateAverageAge(List<Person> people) {
+   public static double calculateAverageAge(List<Person> people) {
         return people.stream()
                 .mapToInt(Person::getAge)
                 .average()
                 .orElse(0.0);
     }
 
-    private static int findOldestAge(List<Person> people) {
-        int maxAge = Integer.MIN_VALUE;
-        for (Person person : people) {
-            if (person.getAge() > maxAge) {
-                maxAge = person.getAge();
-            }
-        }
-        return maxAge;
+    public static int findOldestAge(List<Person> people) {
+        return people.stream()
+                .mapToInt(Person::getAge)
+                .max()
+                .orElse(Integer.MIN_VALUE);
     }
 
     private static int findYoungestAge(List<Person> people) {
