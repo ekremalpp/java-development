@@ -17,12 +17,28 @@ Where Orders.ShipVia = ( SELECT ShipperID
 
 
 -- Question 3 
-
+SELECT OrderId
+FROM `Order Details`
+WHERE ProductID = (SELECT ProductID
+				FROM products
+                WHERE ProductName = 'Sasquatch Ale'
+                );
 
 
 
 -- Question 4 
-
-
-
--- Question 5 
+SELECT firstname, lastname
+FROM employees
+WHERE EmployeeID = ( SELECT EmployeeID
+					FROM orders
+                    WHERE OrderID = 10266
+                    );
+                    
+-- Question 5
+SELECT CompanyName
+FROM Customers
+WHERE CustomerID = (
+  SELECT CustomerID
+  FROM Orders
+  WHERE OrderID = 10266
+);
