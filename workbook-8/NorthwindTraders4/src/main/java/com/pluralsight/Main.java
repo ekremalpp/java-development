@@ -5,57 +5,130 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        // Check for command line arguments for username and password
-        if (args.length != 2) {
-            System.out.println("Application needs two arguments to run: " +
-                    "java com.pluralsight.Main <username> <password>");
-            System.exit(1);
-        }
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
-        String username = args[0];
-        String password = args[1];
+        try {
+            if (args.length != 2) {
+                System.out.println("Application needs two arguments to run: <username> <password>");
+                System.exit(1);
+            }
 
-        Scanner scanner = new Scanner(System.in);
+            String username = args[0];
+            String password = args[1];
 
-        while (true) {
-            System.out.println("What do you want to do?");
-            System.out.println("1) Display all products");
-            System.out.println("2) Display all customers");
-            System.out.println("0) Exit");
-            System.out.print("Select an option: ");
+            Class.forName("com.mysql.cj.jdbc.Driver");
 
-            int choice = scanner.nextInt();
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/northwind",
+                    username,
+                    password);
 
-            switch (choice) {
-                case 1:
-                    displayAllProducts(username, password);
+            Scanner scanner = new Scanner(System.in);
+            while (true) {
+                System.out.println("What do you want to do?");
+                System.out.println("1) Display all products");
+                System.out.println("2) Display all customers");
+                System.out.println("3) Display all categories");
+                System.out.println("0) Exit");
+                System.out.print("Select an option: ");
+
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline character
+
+                if (choice == 0) {
+                    System.out.println("Exiting the application...");
                     break;
-                case 2:
-                    displayAllCustomers(username, password);
-                    break;
-                case 0:
-                    System.out.println("Exiting...");
-                    return;
-                default:
-                    System.out.println("Invalid option. Please try again.");
-                    break;
+                }
+
+                switch (choice) {
+                    case 1:
+                        displayAllProducts(connection);
+                        break;
+                    case 2:
+                        displayAllCustomers(connection);
+                        break;
+                    case 3:
+                        displayAllCategories(connection);
+                        break;
+                    default:
+                        System.out.println("Invalid option. Please try again.");
+                }
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }
 
-    private static void displayAllProducts(String username, String password) {
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet results = null;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/northwind", username, password);
+    private static void displayAllCategories(Connection connection) {
+        String queryCategories = """
+            SELECT CategoryID, CategoryName
+            FROM categories
+            ORDER BY CategoryID
+            """;
+        try (PreparedStatement statementCategories = connection.prepareStatement(queryCategories);
+             ResultSet resultsCategories = statementCategories.executeQuery()) {
 
-            String query = "SELECT ProductID, ProductName, UnitPrice, UnitsInStock FROM products";
-            statement = connection.prepareStatement(query);
-            results = statement.executeQuery();
+            System.out.println("Categories List:");
+            while (resultsCategories.next()) {
+                int categoryId = resultsCategories.getInt("CategoryID");
+                String categoryName = resultsCategories.getString("CategoryName");
 
+                System.out.printf("Category ID: %d | Category Name: %s%n", categoryId, categoryName);
+            }
+
+            // Kullanıcıdan bir CategoryID iste
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter a Category ID to display all products in that category: ");
+            int selectedCategoryId = scanner.nextInt();
+
+            // Girilen CategoryID'ye ait ürünleri getir
+            String queryProducts = """
+                SELECT ProductID, ProductName, UnitPrice, UnitsInStock
+                FROM products
+                WHERE CategoryID = ?
+                ORDER BY ProductName
+                """;
+            try (PreparedStatement statementProducts = connection.prepareStatement(queryProducts)) {
+                statementProducts.setInt(1, selectedCategoryId);
+
+                try (ResultSet resultsProducts = statementProducts.executeQuery()) {
+                    System.out.println("Products in the selected category:");
+                    while (resultsProducts.next()) {
+                        int productId = resultsProducts.getInt("ProductID");
+                        String productName = resultsProducts.getString("ProductName");
+                        double unitPrice = resultsProducts.getDouble("UnitPrice");
+                        int unitsInStock = resultsProducts.getInt("UnitsInStock");
+
+                        System.out.printf("Product ID: %d | Product Name: %s | Unit Price: %.2f | Units In Stock: %d%n",
+                                productId, productName, unitPrice, unitsInStock);
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching data.");
+            e.printStackTrace();
+        }
+    }
+
+    private static void displayAllProducts(Connection connection) {
+        String query = "SELECT ProductID, ProductName, UnitPrice, UnitsInStock FROM products";
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet results = statement.executeQuery()) {
+
+            System.out.println("Product List:");
             while (results.next()) {
                 int productId = results.getInt("ProductID");
                 String productName = results.getString("ProductName");
@@ -68,92 +141,35 @@ public class Main {
                 System.out.println("Units In Stock: " + unitsInStock);
                 System.out.println("-----------------------------------------");
             }
-
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
+            System.out.println("Error fetching product data.");
             e.printStackTrace();
-        } finally {
-            if (results != null) {
-                try {
-                    results.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
-    private static void displayAllCustomers(String username, String password) {
+    private static void displayAllCustomers(Connection connection) {
+        String query = """
+            SELECT CompanyName, ContactName, City, Country, Phone
+            FROM customers
+            ORDER BY Country
+            """;
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet results = statement.executeQuery()) {
 
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet results = null;
-
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/northwind", username, password);
-
-            String query = "SELECT ContactName, CompanyName, City, Country, Phone FROM Customers ORDER BY Country";
-            statement = connection.prepareStatement(query);
-            results = statement.executeQuery();
-
+            System.out.println("Customer List:");
             while (results.next()) {
-                String contactName = results.getString("ContactName");
                 String companyName = results.getString("CompanyName");
+                String contactName = results.getString("ContactName");
                 String city = results.getString("City");
                 String country = results.getString("Country");
                 String phone = results.getString("Phone");
 
-                System.out.println("Contact Name: " + contactName);
-                System.out.println("Company Name: " + companyName);
-                System.out.println("City: " + city);
-                System.out.println("Country: " + country);
-                System.out.println("Phone: " + phone);
-                System.out.println("-----------------------------------------");
+                System.out.printf("Company Name: %s | Contact Name: %s | City: %s | Country: %s | Phone: %s%n",
+                        companyName, contactName, city, country, phone);
             }
-
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
+            System.out.println("Error fetching customer data.");
             e.printStackTrace();
-        } finally {
-            if (results != null) {
-                try {
-                    results.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }
