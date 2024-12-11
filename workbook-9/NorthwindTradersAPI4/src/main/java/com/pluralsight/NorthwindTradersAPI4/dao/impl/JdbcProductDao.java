@@ -1,5 +1,6 @@
 package com.pluralsight.NorthwindTradersAPI4.dao.impl;
 
+
 import com.pluralsight.NorthwindTradersAPI4.dao.interfaces.IProductDao;
 import com.pluralsight.NorthwindTradersAPI4.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,5 +111,16 @@ public class JdbcProductDao implements IProductDao {
             e.printStackTrace();
         }
         return product;
+    }
+    @Override
+    public void delete(int id) {
+        String sql = "DELETE FROM Products WHERE ProductID = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.pluralsight.NorthwindTradersAPI4.dao.interfaces;
 
+
 import com.pluralsight.NorthwindTradersAPI4.models.Product;
 
 import java.util.List;
@@ -13,5 +14,6 @@ public interface IProductDao {
 
     Product update(int id, Product product);
 
-}
+    void delete (int id);
 
+}

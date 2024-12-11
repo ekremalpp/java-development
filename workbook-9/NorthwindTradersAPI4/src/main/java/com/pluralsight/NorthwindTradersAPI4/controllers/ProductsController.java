@@ -1,6 +1,9 @@
 package com.pluralsight.NorthwindTradersAPI4.controllers;
 
+
+
 import com.pluralsight.NorthwindTradersAPI4.dao.interfaces.IProductDao;
+import com.pluralsight.NorthwindTradersAPI4.models.Category;
 import com.pluralsight.NorthwindTradersAPI4.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,7 +40,10 @@ public class ProductsController {
         productDao.update(productId, product);
     }
 
-
-
+    @RequestMapping(path ="/products/{productId}", method = RequestMethod.DELETE)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable int productId){
+        productDao.delete(productId);
+    }
 
 }
