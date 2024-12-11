@@ -12,6 +12,7 @@ import java.util.List;
 
 @Component
 public class JdbcProductDao implements IProductDao {
+
     private final DataSource dataSource;
 
     @Autowired
@@ -22,7 +23,7 @@ public class JdbcProductDao implements IProductDao {
     @Override
     public List<Product> getAll() {
         List<Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM Products";
+        String sql = "SELECT ProductID, ProductName, CategoryID, UnitPrice FROM Products";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -33,7 +34,7 @@ public class JdbcProductDao implements IProductDao {
                 String productName = resultSet.getString("ProductName");
                 int categoryID = resultSet.getInt("CategoryID");
                 double unitPrice = resultSet.getDouble("UnitPrice");
-                Product product = new Product(productID, productName, categoryID, unitPrice);
+                Product product = new Product(productID,productName,categoryID,unitPrice);
                 products.add(product);
             }
         } catch (SQLException e) {
@@ -45,7 +46,7 @@ public class JdbcProductDao implements IProductDao {
 
     @Override
     public Product getById(int id) {
-        String sql = "SELECT * FROM Products WHERE ProductID = ?";
+        String sql = "SELECT ProductID, ProductName, CategoryID, UnitPrice FROM Products WHERE ProductID = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
@@ -56,7 +57,7 @@ public class JdbcProductDao implements IProductDao {
                     String productName = resultSet.getString("ProductName");
                     int categoryID = resultSet.getInt("CategoryID");
                     double unitPrice = resultSet.getDouble("UnitPrice");
-                    Product product = new Product(productID, productName, categoryID, unitPrice);
+                    Product product = new Product(productID,productName,categoryID,unitPrice);
                     return product;
                 }
             }
@@ -66,23 +67,18 @@ public class JdbcProductDao implements IProductDao {
 
         return null;
     }
-
     @Override
     public Product insert(Product product) {
         String sql = "INSERT INTO Products (ProductName, CategoryID, UnitPrice) VALUES (?, ?, ?)";
-
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
             statement.setString(1, product.getProductName());
             statement.setInt(2, product.getCategoryId());
             statement.setDouble(3, product.getUnitPrice());
-
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
                 throw new SQLException("Creating product failed, no rows affected.");
             }
-
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int generatedId = generatedKeys.getInt(1);
@@ -94,12 +90,11 @@ public class JdbcProductDao implements IProductDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return product;
     }
 
     @Override
-    public void update(int id, Product product) {
+    public Product update(int id, Product product) {
         String sql = "UPDATE Products SET ProductName = ?, CategoryID = ?, UnitPrice = ? WHERE ProductID = ?";
 
         try (Connection connection = dataSource.getConnection();
@@ -114,20 +109,6 @@ public class JdbcProductDao implements IProductDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void delete(int id) {
-        String sql = "DELETE FROM Products WHERE ProductID = ?";
-
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setInt(1, id);
-
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        return product;
     }
 }

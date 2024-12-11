@@ -4,10 +4,12 @@ import com.pluralsight.NorthwindTradersAPI4.models.Category;
 
 import java.util.List;
 
+import java.util.List;
+
 public interface ICategoryDao {
-    Category insert(Category category);
     List<Category> getAll();
-    Category getById(int categoryId);
-    void update(int categoryId, Category category);
-    void delete(int categoryId);
+
+    Category getById(int id);
+
+    Category insert(Category category);
 }
