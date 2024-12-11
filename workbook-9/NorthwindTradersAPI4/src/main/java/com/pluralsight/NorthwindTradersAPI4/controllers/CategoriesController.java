@@ -1,7 +1,9 @@
 package com.pluralsight.NorthwindTradersAPI4.controllers;
 
+
 import com.pluralsight.NorthwindTradersAPI4.dao.interfaces.ICategoryDao;
 import com.pluralsight.NorthwindTradersAPI4.models.Category;
+import com.pluralsight.NorthwindTradersAPI4.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,10 @@ public class CategoriesController {
     @ResponseStatus (value = HttpStatus.CREATED)
     public Category addCategory(@RequestBody Category category) {
         return categoryDao.insert(category);
+    }
+    @RequestMapping (path = "/categories/{categoryId}", method = RequestMethod.PUT)
+    public void updateCategory(@PathVariable int categoryId, @RequestBody Category category){
+        categoryDao.update(categoryId, category);
     }
 
 }

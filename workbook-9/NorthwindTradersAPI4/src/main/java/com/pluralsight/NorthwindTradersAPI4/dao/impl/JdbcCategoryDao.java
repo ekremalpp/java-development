@@ -1,5 +1,6 @@
 package com.pluralsight.NorthwindTradersAPI4.dao.impl;
 
+
 import com.pluralsight.NorthwindTradersAPI4.dao.interfaces.ICategoryDao;
 import com.pluralsight.NorthwindTradersAPI4.models.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +87,21 @@ public class JdbcCategoryDao implements ICategoryDao {
         }
         return category;
     }
+    @Override
+    public Category update(int id, Category category) {
+        String sql = "UPDATE Categories SET CategoryName = ? WHERE CategoryId = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, category.getCategoryName());
+            statement.setInt(2, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return category;
+    }
+
+
 
 
 
